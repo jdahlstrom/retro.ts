@@ -13,10 +13,11 @@ This project aims to demonstrate how to write a working 3D rasterizer just by pu
 ## Table of contents
 
 0. Prologue
+1. In which we plot a single red pixel
 
 ## Possible topics to be covered
 
-1. The canvas and plotting pixels
+1. ✓ The canvas and plotting pixels
 1. Frame-to-frame animation
 1. Trigonometry of rotations
 1. Points and vectors
