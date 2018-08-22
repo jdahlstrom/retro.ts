@@ -35,19 +35,46 @@ function retro() {
   // just interpreted as 32-bit chunks.
   let pixels = new Uint32Array(bytes.buffer)
 
-  // We'd like to use familiar (x, y) coordinates to plot pixels, so we need a bit of math to convert
-  // a coordinate pair to a linear index. The general way to do this is `index = y * width + x`.
-  // Skipping y rows of pixels brings us to the first pixel of the correct row, then adding x gets us
-  // to the right column. To represent a color, we can use a hexadecimal literal like in CSS.
-  // The difference is that the order of channels here is ABGR instead of RGBA! This is due to how
-  // the data is laid out in memory.
-  pixels[100 * imageData.width + 100] = 0xFF0000FF
+  const sin = Math.sin
+  const cos = Math.cos
+  const pi = Math.PI
 
-  // Finally, we paint our image data on the canvas. This is often called _blitting_. For our purposes
-  // it makes sense to paint the whole canvas area in one go, but creating multiple smaller images
-  // and blitting them at different coordinates is a time-honored technique commonly used in 2D games.
-  // Such small animated bitmaps are usually called _sprites_.
-  ctx.putImageData(imageData, 0, 0)
+  function putpixel(x: number, y: number, color: number) {
+    // We'd like to use familiar (x, y) coordinates to plot pixels, so we need a bit of math to convert
+    // a coordinate pair to a linear index. The general way to do this is `index = y * width + x`.
+    // Skipping y rows of pixels brings us to the first pixel of the correct row, then adding x gets us
+    // to the right column. To represent a color, we can use a hexadecimal literal like in CSS.
+    // The difference is that the order of channels here is ABGR instead of RGBA! This is due to how
+    // the data is laid out in memory.
+    pixels[(y|0) * imageData.width + (x|0)] = color
+  }
+  
+  function frame(ts: number) {
+    
+    let n = 10000
+    for(let t = 0; t < 1; t += 0.0001) {
+      // Let's try something cool!
+
+      let r = 150*t
+      let theta = ts*1e-2 + 7*2*pi*t
+
+      let x = 320 + r * sin(theta) + r*0.7 * sin(theta*11.7)
+      let y = 240 + r * cos(theta) + r*0.7 * cos(theta*11.7)
+
+      putpixel(x, y, ~0)
+    }
+    // Finally, we paint our image data on the canvas. This is often called _blitting_. For our purposes
+    // it makes sense to paint the whole canvas area in one go, but creating multiple smaller images
+    // and blitting them at different coordinates is a time-honored technique commonly used in 2D games.
+    // Such small animated bitmaps are usually called _sprites_.
+    ctx.putImageData(imageData, 0, 0)
+
+    // 
+    pixels.fill(0xff000000)
+
+    window.requestAnimationFrame(frame)
+  }
+  frame(0)
 }
 
 window.addEventListener("load", retro)
